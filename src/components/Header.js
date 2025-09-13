@@ -15,7 +15,7 @@ const Header = () => {
           marginBottom: '0.5rem',
           textAlign: 'center'
         }}>
-          LPC Animation Generator
+          Spritesheet Generator
         </h1>
         <p style={{
           fontSize: '1.1rem',
@@ -25,8 +25,6 @@ const Header = () => {
           margin: '0 auto',
           lineHeight: 1.6
         }}>
-          Create and preview character animations using the Liberated Pixel Cup (LPC) format.
-          Supports walk, run, jump, combat moves, and more with customizable characters.
         </p>
       </div>
     </header>

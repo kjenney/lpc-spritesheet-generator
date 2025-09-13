@@ -1,9 +1,9 @@
 {
-  "name": "lpc-animation-generator",
+  "name": "lpc-spritesheet-generator",
   "version": "1.0.0",
   "private": true,
-  "description": "A React application for generating and previewing LPC (Liberated Pixel Cup) character animations",
-  "homepage": "https://github.com/yourusername/lpc-animation-generator",
+  "description": "A React application for generating and exporting professional LPC (Liberated Pixel Cup) spritesheets",
+  "homepage": ".",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
@@ -41,12 +41,15 @@
   "keywords": [
     "lpc",
     "liberated-pixel-cup",
+    "spritesheet",
     "sprite",
     "animation",
     "character",
     "generator",
+    "export",
     "react",
-    "pixel-art"
+    "pixel-art",
+    "game-development"
   ],
   "author": "Your Name",
   "license": "MIT"
