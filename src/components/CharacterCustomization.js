@@ -54,16 +54,17 @@ const CharacterCustomization = () => {
         </div>
       ))}
 
-      <div style={{ 
-        marginTop: '1rem', 
-        padding: '0.75rem', 
-        backgroundColor: '#f3f4f6', 
-        borderRadius: '0.375rem' 
+      <div style={{
+        marginTop: '1rem',
+        padding: '0.75rem',
+        backgroundColor: '#f3f4f6',
+        borderRadius: '0.375rem'
       }}>
         <p style={{ fontSize: '0.75rem', color: '#4b5563', lineHeight: 1.4 }}>
-          <strong>Note:</strong> This is a simplified character renderer. 
-          In a full LPC implementation, each part would be loaded from separate 
-          spritesheet files and layered according to the LPC standard.
+          <strong>LPC Integration:</strong> The app now loads actual Universal LPC
+          Spritesheet assets from GitHub. When assets are loaded successfully,
+          you'll see real LPC character sprites. Falls back to placeholder sprites
+          if assets fail to load.
         </p>
       </div>
     </div>

@@ -13,8 +13,8 @@ function App() {
         <main className="main-content">
           <div className="container">
             <div className="layout">
-              <AnimationPreview />
               <ConfigurationPanel />
+              <AnimationPreview />
             </div>
           </div>
         </main>

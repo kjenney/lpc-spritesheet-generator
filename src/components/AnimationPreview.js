@@ -1,17 +1,20 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Play, Pause, RotateCcw, Download } from 'lucide-react';
 import { useAnimation } from '../hooks/useAnimation';
 import AnimationControls from './AnimationControls';
 import FrameSelector from './FrameSelector';
-import { 
-  createCharacterSprite, 
-  getFrameOffset, 
-  drawFrameInfo, 
-  exportFrame 
+import {
+  createLPCCharacterSprite,
+  createCharacterSprite,
+  getFrameOffset,
+  drawFrameInfo,
+  exportFrame,
+  initializeLPCAssets
 } from '../utils/characterRenderer';
 
 const AnimationPreview = () => {
   const canvasRef = useRef(null);
+  const [lpcAssetsLoaded, setLpcAssetsLoaded] = useState(false);
   const {
     isPlaying,
     currentFrame,
@@ -25,6 +28,19 @@ const AnimationPreview = () => {
     handleReset,
     nextFrame
   } = useAnimation();
+
+  // Initialize LPC assets when component mounts
+  useEffect(() => {
+    initializeLPCAssets()
+      .then(() => {
+        setLpcAssetsLoaded(true);
+        console.log('LPC assets loaded successfully');
+      })
+      .catch(error => {
+        console.warn('Failed to initialize LPC assets:', error);
+        setLpcAssetsLoaded(false);
+      });
+  }, []);
 
   // Animation loop
   useEffect(() => {
@@ -58,16 +74,20 @@ const AnimationPreview = () => {
     ctx.fillStyle = '#f9fafb';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Create character sprite
-    const characterSprite = createCharacterSprite(characterParts, selectedDirection);
-    
-    // Get animation offset
-    const offset = getFrameOffset(selectedAnimation, currentFrame, selectedDirection);
-    
+    // Create character sprite using LPC assets if available
+    const characterSprite = lpcAssetsLoaded
+      ? createLPCCharacterSprite(characterParts, selectedDirection, selectedAnimation, currentFrame)
+      : createCharacterSprite(characterParts, selectedDirection);
+
+    // Get animation offset (only apply for placeholder sprites, LPC sprites handle frames internally)
+    const offset = lpcAssetsLoaded
+      ? { x: 0, y: 0 }  // LPC sprites already have the correct frame
+      : getFrameOffset(selectedAnimation, currentFrame, selectedDirection);
+
     // Calculate position with offset and centering
     const x = (canvas.width - frameWidth * scale) / 2 + offset.x * scale;
     const y = (canvas.height - frameHeight * scale) / 2 + offset.y * scale;
-    
+
     // Draw character with scaling and no smoothing for pixel art
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(characterSprite, x, y, frameWidth * scale, frameHeight * scale);
@@ -92,16 +112,28 @@ const AnimationPreview = () => {
 
   return (
     <div className="card">
-      <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>
-        Animation Preview
-      </h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: '600', margin: 0 }}>
+          Animation Preview
+        </h2>
+        <div style={{
+          fontSize: '0.75rem',
+          padding: '0.25rem 0.5rem',
+          borderRadius: '0.25rem',
+          backgroundColor: lpcAssetsLoaded ? '#dcfce7' : '#fef3cd',
+          color: lpcAssetsLoaded ? '#15803d' : '#a16207',
+          border: `1px solid ${lpcAssetsLoaded ? '#bbf7d0' : '#fde047'}`
+        }}>
+          {lpcAssetsLoaded ? '✓ LPC Assets Loaded' : '⟳ Loading LPC Assets...'}
+        </div>
+      </div>
       
       {/* Canvas Container */}
       <div className="canvas-container">
         <canvas
           ref={canvasRef}
-          width={400}
-          height={400}
+          width={300}
+          height={300}
           className="animation-canvas"
         />
       </div>

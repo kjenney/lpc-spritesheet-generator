@@ -1,6 +1,9 @@
 /**
  * Character rendering utilities for LPC sprites
+ * Updated to use actual Universal LPC Spritesheet assets
  */
+
+import { createLPCCharacterFrame, preloadEssentialAssets } from './lpcAssetLoader';
 
 // Animation frame variations for different animations
 export const getFrameOffset = (animation, frame, direction) => {
@@ -52,8 +55,68 @@ export const getFrameOffset = (animation, frame, direction) => {
   return offsets[frame % offsets.length] || { x: 0, y: 0 };
 };
 
+// Global asset cache for loaded LPC sprites
+let lpcAssets = null;
+let loadingPromise = null;
+
+/**
+ * Initialize LPC assets (call this once when the app starts)
+ * @returns {Promise<void>}
+ */
+export const initializeLPCAssets = async () => {
+  if (lpcAssets) return lpcAssets;
+
+  if (loadingPromise) return loadingPromise;
+
+  loadingPromise = preloadEssentialAssets('male', 'plain', 'longsleeve', 'pants')
+    .then(sprites => {
+      lpcAssets = sprites;
+      return lpcAssets;
+    })
+    .catch(error => {
+      console.warn('Failed to load LPC assets, using fallback:', error);
+      lpcAssets = { body: {}, head: {}, hair: {}, torso: {}, legs: {} };
+      return lpcAssets;
+    });
+
+  return loadingPromise;
+};
+
+/**
+ * Create character sprite using real LPC assets when available
+ * @param {Object} characterParts - Character parts configuration
+ * @param {string} direction - Direction (up, down, left, right)
+ * @param {string} animation - Current animation
+ * @param {number} frame - Current frame number
+ * @returns {HTMLCanvasElement} Character sprite
+ */
+export const createLPCCharacterSprite = (characterParts, direction = 'down', animation = 'walk', frame = 0) => {
+  // If LPC assets are loaded, use them
+  if (lpcAssets && (lpcAssets.body || lpcAssets.head || lpcAssets.hair || lpcAssets.torso || lpcAssets.legs)) {
+    try {
+      return createLPCCharacterFrame(
+        lpcAssets,
+        animation,
+        frame,
+        direction,
+        characterParts
+      );
+    } catch (error) {
+      console.warn('Failed to create LPC character frame, using fallback:', error);
+    }
+  }
+
+  // Fallback to placeholder character
+  return createPlaceholderCharacterSprite(characterParts, direction);
+};
+
 // Create a simple character sprite (placeholder for actual LPC sprites)
 export const createCharacterSprite = (characterParts, direction = 'down') => {
+  return createPlaceholderCharacterSprite(characterParts, direction);
+};
+
+// Renamed original function to be explicit about being a placeholder
+export const createPlaceholderCharacterSprite = (characterParts, direction = 'down') => {
   const canvas = document.createElement('canvas');
   canvas.width = 64;
   canvas.height = 64;

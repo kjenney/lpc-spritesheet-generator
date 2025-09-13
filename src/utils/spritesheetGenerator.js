@@ -4,7 +4,7 @@
  */
 
 import { ANIMATIONS, DIRECTIONS } from '../hooks/useAnimation';
-import { createCharacterSprite, getFrameOffset } from './characterRenderer';
+import { createLPCCharacterSprite, createCharacterSprite, getFrameOffset, initializeLPCAssets } from './characterRenderer';
 
 // LPC spritesheet dimensions
 export const SPRITESHEET_CONFIG = {
@@ -69,14 +69,22 @@ export const generateSpritesheet = (
         const x = frame * frameWidth;
 
         // Create character sprite for this frame
-        const characterSprite = createCharacterSprite(characterParts, directionName);
+        // First try to use LPC assets, fallback to placeholder
+        let characterSprite;
+        let spriteX = x;
+        let spriteY = y;
 
-        // Get frame offset for animation
-        const offset = getFrameOffset(animationName, frame, directionName);
-
-        // Draw the character sprite with offset
-        const spriteX = x + offset.x;
-        const spriteY = y + offset.y;
+        try {
+          // Try to use LPC character sprite (this will use actual sprites if loaded)
+          characterSprite = createLPCCharacterSprite(characterParts, directionName, animationName, frame);
+          // LPC sprites already have correct frames, no offset needed
+        } catch (error) {
+          // Fallback to placeholder sprite with offset
+          characterSprite = createCharacterSprite(characterParts, directionName);
+          const offset = getFrameOffset(animationName, frame, directionName);
+          spriteX = x + offset.x;
+          spriteY = y + offset.y;
+        }
 
         ctx.drawImage(characterSprite, spriteX, spriteY, frameWidth, frameHeight);
 
@@ -139,19 +147,24 @@ export const generateAnimationSpritesheet = (characterParts, animationName, opti
       const x = frame * frameWidth;
 
       // Create character sprite
-      const characterSprite = createCharacterSprite(characterParts, directionName);
+      let characterSprite;
+      let spriteX = x;
+      let spriteY = y;
 
-      // Get frame offset
-      const offset = getFrameOffset(animationName, frame, directionName);
+      try {
+        // Try to use LPC character sprite
+        characterSprite = createLPCCharacterSprite(characterParts, directionName, animationName, frame);
+        // LPC sprites already have correct frames, no offset needed
+      } catch (error) {
+        // Fallback to placeholder sprite with offset
+        characterSprite = createCharacterSprite(characterParts, directionName);
+        const offset = getFrameOffset(animationName, frame, directionName);
+        spriteX = x + offset.x;
+        spriteY = y + offset.y;
+      }
 
-      // Draw sprite with offset
-      ctx.drawImage(
-        characterSprite,
-        x + offset.x,
-        y + offset.y,
-        frameWidth,
-        frameHeight
-      );
+      // Draw sprite
+      ctx.drawImage(characterSprite, spriteX, spriteY, frameWidth, frameHeight);
 
       if (includeFrameNumbers) {
         drawFrameNumber(ctx, x, y, frame + 1, frameWidth, frameHeight);
