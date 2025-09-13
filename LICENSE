@@ -1,0 +1,50 @@
+MIT License
+
+Copyright (c) 2025 LPC Animation Generator
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+IMPORTANT NOTICE REGARDING LPC SPRITES:
+
+This software is a tool for working with LPC (Liberated Pixel Cup) sprites.
+The LPC sprites themselves are NOT covered by this MIT license and have their
+own licensing requirements.
+
+When using actual LPC sprites (not the placeholder sprites in this demo), you
+MUST comply with the original LPC licensing terms, which typically include:
+
+- Creative Commons Attribution (CC-BY)
+- Creative Commons Attribution-ShareAlike (CC-BY-SA) 
+- GNU General Public License (GPL)
+- OpenGameArt.org Attribution (OGA-BY)
+
+You are required to:
+1. Credit all contributing artists
+2. Include proper license information
+3. Comply with share-alike requirements where applicable
+4. Make attribution accessible in your final product
+
+For complete LPC attribution requirements, see:
+https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator/blob/master/README.md
+
+This tool is provided to help you work with LPC sprites, but it is your 
+responsibility to ensure proper attribution and licensing compliance when 
+using LPC artwork in your projects.
