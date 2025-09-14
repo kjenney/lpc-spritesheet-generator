@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: spritesheet-generator
     ports:
-      - "8080:80"
+      - "9091:80"
     restart: unless-stopped
     environment:
       - NODE_ENV=production
