@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   spritesheet-generator:
     build:
@@ -21,7 +19,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.spritesheet-generator.rule=Host(`spritesheet.localhost`)"
       - "traefik.http.services.spritesheet-generator.loadbalancer.server.port=80"
-
-networks:
-  default:
-    name: spritesheet-network
