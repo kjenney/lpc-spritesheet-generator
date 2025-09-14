@@ -98,3 +98,4 @@ temp/
 *.sw?
 
 .claude
+dist

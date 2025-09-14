@@ -203,7 +203,15 @@ Styles are organized in `App.css` with CSS custom properties for easy theming:
 - **Utilities**: Reusable utility classes
 - **Colors**: Consistent color scheme throughout
 
-## Building for Production
+### Building for Production
+
+```
+mkdir -p dist && \
+docker build --build-arg NODE_ENV=production -t spritesheet-builder-image . && \
+docker run --rm \
+  -v "$(pwd)/dist:/output" \
+  spritesheet-builder-image
+```
 
 ### Development Build
 ```bash
@@ -213,25 +221,6 @@ yarn build
 ```
 
 This creates a `build/` directory with optimized files ready for deployment.
-
-### Docker Production Deployment
-
-The project includes Docker support for production deployments with Nginx.
-
-#### Quick Start with Docker Compose
-
-```bash
-# Build and start the application
-docker-compose up --build
-
-# Run in detached mode
-docker-compose up --build -d
-
-# Stop the application
-docker-compose down
-```
-
-Access the application at http://localhost:8080
 
 #### Manual Docker Build
 
@@ -253,15 +242,6 @@ docker run -d -p 8080:80 --name spritesheet-app spritesheet-generator
 - **Health checks**: Built-in health monitoring at `/health` endpoint
 - **Security headers**: X-Frame-Options, X-Content-Type-Options, CSP, and more
 - **Static asset caching**: Optimized cache headers for JavaScript, CSS, and images
-
-#### Production Environment Variables
-
-The Docker setup supports these environment variables:
-
-```bash
-# Set in docker-compose.yml or pass to docker run
-NODE_ENV=production
-```
 
 ### Traditional Deployment Options
 
