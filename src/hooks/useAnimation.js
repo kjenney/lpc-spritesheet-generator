@@ -33,7 +33,7 @@ export const useAnimation = () => {
 };
 
 export const AnimationProvider = ({ children }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState(200);
   const [selectedAnimation, setSelectedAnimation] = useState('walk');
@@ -46,6 +46,8 @@ export const AnimationProvider = ({ children }) => {
     clothing: true,
     accessories: false
   });
+
+  const [hairColor, setHairColor] = useState('brown');
 
   const handlePlayPause = useCallback(() => {
     setIsPlaying(prev => !prev);
@@ -83,6 +85,10 @@ export const AnimationProvider = ({ children }) => {
     setCharacterParts(parts);
   }, []);
 
+  const handleHairColorChange = useCallback((color) => {
+    setHairColor(color);
+  }, []);
+
   const nextFrame = useCallback(() => {
     setCurrentFrame(prev => (prev + 1) % ANIMATIONS[selectedAnimation].frames);
   }, [selectedAnimation]);
@@ -96,7 +102,8 @@ export const AnimationProvider = ({ children }) => {
     selectedDirection,
     scale,
     characterParts,
-    
+    hairColor,
+
     // Actions
     handlePlayPause,
     handleReset,
@@ -106,8 +113,9 @@ export const AnimationProvider = ({ children }) => {
     handleScaleChange,
     handleSpeedChange,
     handleCharacterPartsChange,
+    handleHairColorChange,
     nextFrame,
-    
+
     // Constants
     ANIMATIONS,
     DIRECTIONS

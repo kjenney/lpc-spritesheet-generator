@@ -117,6 +117,20 @@ export const ANIMATION_FILE_MAP = {
   climb: 'climb.png'
 };
 
+// Hair color definitions with RGB values
+export const HAIR_COLORS = {
+  brown: { name: 'Brown', r: 139, g: 69, b: 19 },
+  blonde: { name: 'Blonde', r: 255, g: 223, b: 0 },
+  black: { name: 'Black', r: 50, g: 50, b: 50 },
+  red: { name: 'Red', r: 178, g: 34, b: 34 },
+  white: { name: 'White', r: 255, g: 255, b: 255 },
+  gray: { name: 'Gray', r: 169, g: 169, b: 169 },
+  auburn: { name: 'Auburn', r: 165, g: 42, b: 42 },
+  chestnut: { name: 'Chestnut', r: 205, g: 133, b: 63 },
+  strawberry: { name: 'Strawberry Blonde', r: 255, g: 182, b: 193 },
+  platinum: { name: 'Platinum', r: 229, g: 228, b: 226 }
+};
+
 // Cache for loaded images
 const imageCache = new Map();
 const loadPromises = new Map();
@@ -387,6 +401,105 @@ export const loadAllLegsSprites = async (type = 'pants', gender = 'male') => {
 };
 
 /**
+ * Apply color transformation to a hair sprite
+ * @param {HTMLImageElement} baseSprite - Original hair sprite
+ * @param {Object} color - Color object with r, g, b values
+ * @returns {HTMLCanvasElement} Colored hair sprite
+ */
+export const applyHairColor = (baseSprite, color) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = baseSprite.width;
+  canvas.height = baseSprite.height;
+  const ctx = canvas.getContext('2d');
+
+  // Draw the original sprite
+  ctx.drawImage(baseSprite, 0, 0);
+
+  // Get image data for color manipulation
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+
+  // Calculate target color brightness for proper scaling
+  const targetBrightness = Math.max(color.r, color.g, color.b) / 255;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const a = data[i + 3];
+
+    // Only modify non-transparent pixels
+    if (a > 0) {
+      // Skip pixels that are too dark (outlines/shadows)
+      const originalBrightness = Math.max(r, g, b);
+      if (originalBrightness < 15) {
+        continue; // Keep very dark pixels as-is
+      }
+
+      // Calculate brightness ratio (0-1) based on original pixel
+      const brightnessRatio = originalBrightness / 255;
+
+      // For light target colors, ensure they appear brighter than dark colors
+      let scalingFactor;
+      if (targetBrightness > 0.7) {
+        // Light colors (white, blonde, etc.) - use higher base brightness
+        scalingFactor = Math.max(0.6, brightnessRatio);
+      } else if (targetBrightness > 0.4) {
+        // Medium colors (gray, brown, etc.)
+        scalingFactor = Math.max(0.3, brightnessRatio * 0.8);
+      } else {
+        // Dark colors (black, dark brown, etc.)
+        scalingFactor = Math.max(0.2, brightnessRatio * 0.6);
+      }
+
+      // Apply the new color with proper scaling
+      data[i] = Math.min(255, color.r * scalingFactor);     // Red
+      data[i + 1] = Math.min(255, color.g * scalingFactor); // Green
+      data[i + 2] = Math.min(255, color.b * scalingFactor); // Blue
+      // Alpha stays the same
+    }
+  }
+
+  // Put the modified image data back
+  ctx.putImageData(imageData, 0, 0);
+  return canvas;
+};
+
+/**
+ * Load hair sprites with specified color
+ * @param {string} style - Hair style (e.g., 'plain')
+ * @param {string} colorKey - Color key from HAIR_COLORS
+ * @returns {Promise<Object>} Object mapping animation names to colored hair sprites
+ */
+export const loadColoredHairSprites = async (style = 'plain', colorKey = 'brown') => {
+  const color = HAIR_COLORS[colorKey];
+  if (!color) {
+    console.warn(`Unknown hair color: ${colorKey}, using brown`);
+    colorKey = 'brown';
+  }
+
+  // Load base hair sprites first
+  const baseSprites = await loadAllHairSprites(style);
+  const coloredSprites = {};
+
+  // Apply color to each animation sprite
+  Object.entries(baseSprites).forEach(([animation, sprite]) => {
+    if (sprite) {
+      try {
+        coloredSprites[animation] = applyHairColor(sprite, HAIR_COLORS[colorKey]);
+      } catch (error) {
+        console.warn(`Failed to color ${animation} hair sprite:`, error);
+        coloredSprites[animation] = sprite; // Use original if coloring fails
+      }
+    } else {
+      coloredSprites[animation] = null;
+    }
+  });
+
+  return coloredSprites;
+};
+
+/**
  * Create a character frame from LPC sprites with proper layering
  * @param {Object} allSprites - Object containing all loaded sprite collections
  * @param {string} animation - Current animation name
@@ -561,16 +674,17 @@ const drawPlaceholderCharacter = (ctx, characterParts, direction) => {
  * Preload essential LPC assets for immediate use
  * @param {string} gender - Gender for body, head, torso, and legs sprites
  * @param {string} hairStyle - Hair style to load
+ * @param {string} hairColor - Hair color key from HAIR_COLORS
  * @param {string} torsoType - Torso clothing type
  * @param {string} legsType - Legs clothing type
  * @returns {Promise<Object>} Preloaded asset collection
  */
-export const preloadEssentialAssets = async (gender = 'male', hairStyle = 'plain', torsoType = 'longsleeve', legsType = 'pants') => {
+export const preloadEssentialAssets = async (gender = 'male', hairStyle = 'plain', hairColor = 'brown', torsoType = 'longsleeve', legsType = 'pants') => {
   try {
     const [bodySprites, headSprites, hairSprites, torsoSprites, legsSprites] = await Promise.all([
       loadAllBodySprites(gender),
       loadAllHeadSprites(gender),
-      loadAllHairSprites(hairStyle),
+      loadColoredHairSprites(hairStyle, hairColor),
       loadAllTorsoSprites(torsoType, gender),
       loadAllLegsSprites(legsType, gender)
     ]);

@@ -9,7 +9,8 @@ import {
   getFrameOffset,
   drawFrameInfo,
   exportFrame,
-  initializeLPCAssets
+  initializeLPCAssets,
+  updateHairColor
 } from '../utils/characterRenderer';
 
 const AnimationPreview = () => {
@@ -23,6 +24,7 @@ const AnimationPreview = () => {
     selectedDirection,
     scale,
     characterParts,
+    hairColor,
     ANIMATIONS,
     handlePlayPause,
     handleReset,
@@ -31,16 +33,25 @@ const AnimationPreview = () => {
 
   // Initialize LPC assets when component mounts
   useEffect(() => {
+    console.log('Starting LPC asset initialization...');
     initializeLPCAssets()
-      .then(() => {
+      .then((assets) => {
+        console.log('LPC assets loaded successfully:', assets);
         setLpcAssetsLoaded(true);
-        console.log('LPC assets loaded successfully');
       })
       .catch(error => {
-        console.warn('Failed to initialize LPC assets:', error);
+        console.error('Failed to initialize LPC assets:', error);
+        console.log('Falling back to placeholder sprites');
         setLpcAssetsLoaded(false);
       });
   }, []);
+
+  // Update hair color when it changes
+  useEffect(() => {
+    if (lpcAssetsLoaded) {
+      updateHairColor(hairColor);
+    }
+  }, [hairColor, lpcAssetsLoaded]);
 
   // Animation loop
   useEffect(() => {
@@ -104,7 +115,7 @@ const AnimationPreview = () => {
   // Redraw when dependencies change
   useEffect(() => {
     drawFrame();
-  }, [currentFrame, selectedAnimation, selectedDirection, scale, characterParts]);
+  }, [currentFrame, selectedAnimation, selectedDirection, scale, characterParts, hairColor]);
 
   const handleExport = () => {
     exportFrame(canvasRef.current, selectedAnimation, selectedDirection, currentFrame);

@@ -3,7 +3,7 @@
  * Updated to use actual Universal LPC Spritesheet assets
  */
 
-import { createLPCCharacterFrame, preloadEssentialAssets } from './lpcAssetLoader';
+import { createLPCCharacterFrame, preloadEssentialAssets, loadColoredHairSprites } from './lpcAssetLoader';
 
 // Animation frame variations for different animations
 export const getFrameOffset = (animation, frame, direction) => {
@@ -68,7 +68,7 @@ export const initializeLPCAssets = async () => {
 
   if (loadingPromise) return loadingPromise;
 
-  loadingPromise = preloadEssentialAssets('male', 'plain', 'longsleeve', 'pants')
+  loadingPromise = preloadEssentialAssets('male', 'plain', 'brown', 'longsleeve', 'pants')
     .then(sprites => {
       lpcAssets = sprites;
       return lpcAssets;
@@ -80,6 +80,26 @@ export const initializeLPCAssets = async () => {
     });
 
   return loadingPromise;
+};
+
+/**
+ * Update hair color for existing LPC assets
+ * @param {string} newHairColor - New hair color key
+ * @returns {Promise<void>}
+ */
+export const updateHairColor = async (newHairColor = 'brown') => {
+  if (!lpcAssets) {
+    console.warn('LPC assets not loaded yet');
+    return;
+  }
+
+  try {
+    const newHairSprites = await loadColoredHairSprites('plain', newHairColor);
+    lpcAssets.hair = newHairSprites;
+    console.log(`Hair color updated to ${newHairColor}`);
+  } catch (error) {
+    console.warn('Failed to update hair color:', error);
+  }
 };
 
 /**

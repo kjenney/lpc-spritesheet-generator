@@ -1,8 +1,9 @@
 import React from 'react';
 import { useAnimation } from '../hooks/useAnimation';
+import { HAIR_COLORS } from '../utils/lpcAssetLoader';
 
 const CharacterCustomization = () => {
-  const { characterParts, handleCharacterPartsChange } = useAnimation();
+  const { characterParts, handleCharacterPartsChange, hairColor, handleHairColorChange } = useAnimation();
 
   const handlePartToggle = (partName) => {
     handleCharacterPartsChange({
@@ -53,6 +54,64 @@ const CharacterCustomization = () => {
           </label>
         </div>
       ))}
+
+      {/* Hair Color Selection */}
+      {characterParts.hair && (
+        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+          <label style={{
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            color: '#374151',
+            marginBottom: '0.5rem',
+            display: 'block'
+          }}>
+            Hair Color
+          </label>
+          <select
+            value={hairColor}
+            onChange={(e) => handleHairColorChange(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.5rem',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              backgroundColor: 'white',
+              cursor: 'pointer'
+            }}
+          >
+            {Object.entries(HAIR_COLORS).map(([colorKey, colorData]) => (
+              <option key={colorKey} value={colorKey}>
+                {colorData.name}
+              </option>
+            ))}
+          </select>
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.25rem',
+            marginTop: '0.5rem'
+          }}>
+            {Object.entries(HAIR_COLORS).map(([colorKey, colorData]) => (
+              <button
+                key={colorKey}
+                onClick={() => handleHairColorChange(colorKey)}
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  border: hairColor === colorKey ? '2px solid #3b82f6' : '1px solid #d1d5db',
+                  borderRadius: '50%',
+                  backgroundColor: `rgb(${colorData.r}, ${colorData.g}, ${colorData.b})`,
+                  cursor: 'pointer',
+                  padding: 0,
+                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.1)'
+                }}
+                title={colorData.name}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       <div style={{
         marginTop: '1rem',
