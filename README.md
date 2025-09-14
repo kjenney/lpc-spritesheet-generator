@@ -1,4 +1,4 @@
-# LPC Spritesheet Generator
+# Spritesheet Generator
 
 A React-based application for creating and previewing spritesheets using the Liberated Pixel Cup (LPC) format. This tool allows you to generate walk cycles, run animations, combat moves, and more with customizable pixel art characters.
 
