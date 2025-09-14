@@ -205,7 +205,7 @@ Styles are organized in `App.css` with CSS custom properties for easy theming:
 
 ## Building for Production
 
-### Create Production Build
+### Development Build
 ```bash
 npm run build
 # or
@@ -214,11 +214,84 @@ yarn build
 
 This creates a `build/` directory with optimized files ready for deployment.
 
-### Deployment Options
+### Docker Production Deployment
+
+The project includes Docker support for production deployments with Nginx.
+
+#### Quick Start with Docker Compose
+
+```bash
+# Build and start the application
+docker-compose up --build
+
+# Run in detached mode
+docker-compose up --build -d
+
+# Stop the application
+docker-compose down
+```
+
+Access the application at http://localhost:8080
+
+#### Manual Docker Build
+
+```bash
+# Build the Docker image
+docker build -t spritesheet-generator .
+
+# Run the container
+docker run -p 8080:80 spritesheet-generator
+
+# Run in detached mode
+docker run -d -p 8080:80 --name spritesheet-app spritesheet-generator
+```
+
+#### Docker Features
+
+- **Multi-stage build**: Optimized image size using Node.js for building and Nginx for serving
+- **Production-ready Nginx**: Includes gzip compression, security headers, and SPA routing
+- **Health checks**: Built-in health monitoring at `/health` endpoint
+- **Security headers**: X-Frame-Options, X-Content-Type-Options, CSP, and more
+- **Static asset caching**: Optimized cache headers for JavaScript, CSS, and images
+
+#### Production Environment Variables
+
+The Docker setup supports these environment variables:
+
+```bash
+# Set in docker-compose.yml or pass to docker run
+NODE_ENV=production
+```
+
+### Traditional Deployment Options
 
 - **Static Hosting**: GitHub Pages, Netlify, Vercel
 - **CDN**: Upload build files to any CDN
 - **Web Server**: Serve from Apache, Nginx, or any web server
+
+### Manual Nginx Setup
+
+If deploying without Docker, use this Nginx configuration:
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+    root /path/to/build;
+    index index.html;
+
+    # Handle client-side routing
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
 
 ## Contributing
 
