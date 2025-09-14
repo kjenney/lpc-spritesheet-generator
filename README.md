@@ -235,14 +235,6 @@ docker run -p 8080:80 spritesheet-generator
 docker run -d -p 8080:80 --name spritesheet-app spritesheet-generator
 ```
 
-#### Docker Features
-
-- **Multi-stage build**: Optimized image size using Node.js for building and Nginx for serving
-- **Production-ready Nginx**: Includes gzip compression, security headers, and SPA routing
-- **Health checks**: Built-in health monitoring at `/health` endpoint
-- **Security headers**: X-Frame-Options, X-Content-Type-Options, CSP, and more
-- **Static asset caching**: Optimized cache headers for JavaScript, CSS, and images
-
 ### Traditional Deployment Options
 
 - **Static Hosting**: GitHub Pages, Netlify, Vercel
